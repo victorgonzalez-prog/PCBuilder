@@ -13,6 +13,8 @@ Aplicativo Android acadêmico para selecionar peças de computador, verificar co
 
 Os nomes próprios do código e os textos da interface estão em português. As bibliotecas, os protocolos e as configurações externas mantêm seus nomes originais.
 
+Anúncios de kits com peças extras não são aceitos como preço de um componente avulso. Kits de memória da capacidade e geração corretas permanecem pesquisáveis.
+
 Sem cotação aceita, o aplicativo exibe “Sem cotação disponível”. O total fica indisponível quando falta preço, e a montagem automática só usa peças com preços finitos e positivos. Compatibilidade é preliminar: confirme BIOS, dimensões, conexões e refrigeração antes da compra.
 
 ## Pré-requisitos
@@ -51,20 +53,26 @@ Configure o Gradle para usar JDK 21. No PowerShell, ajuste o caminho se sua inst
 $env:JAVA_HOME = 'C:\Program Files\Java\jdk-21.0.10'
 ```
 
-Na raiz do projeto, com o backend local em execução e o dispositivo conectado:
+O projeto usa por padrão a API pública https://pcbuilder-api-dc2r.onrender.com, configurada em gradle.properties. Para usar o aplicativo com essa API, o professor não precisa executar Node.js nem configurar chaves no Android.
+
+Na raiz do projeto, com o dispositivo conectado:
 
 ```powershell
-adb reverse tcp:3001 tcp:3001
-.\gradlew.bat :app:assembleDebug "-Ppcbuilder.apiUrl=http://127.0.0.1:3001"
+.\gradlew.bat :app:assembleDebug
 adb install -r app\build\outputs\apk\debug\app-debug.apk
 adb shell am start -n com.example.pcbuilder/.AtividadePrincipal
 ```
 
-O APK é gerado em app/build/outputs/apk/debug/app-debug.apk.
+Também é possível abrir o projeto no Android Studio e executar o módulo app. O APK é gerado em app/build/outputs/apk/debug/app-debug.apk.
 
-Para usar uma API hospedada, informe sua URL HTTPS real na propriedade pcbuilder.apiUrl. Também é possível configurar essa propriedade no arquivo de usuário %USERPROFILE%/.gradle/gradle.properties e executar pelo Android Studio. Isso não exige alterar código Kotlin. Sem URL configurada, o aplicativo mantém o catálogo e a seleção, mas informa erro ao consultar preços.
+Para desenvolver usando o backend local em execução:
 
-O endereço local exige o computador executando o backend e o redirecionamento adb reverse; não substitui a hospedagem para a entrega.
+```powershell
+adb reverse tcp:3001 tcp:3001
+.\gradlew.bat :app:assembleDebug "-Ppcbuilder.apiUrl=http://127.0.0.1:3001"
+```
+
+A propriedade pcbuilder.apiUrl permite escolher outra API sem alterar código Kotlin. O endereço público não é um segredo. Credenciais permanecem exclusivamente no servidor.
 
 ## Pesquisas administrativas
 
@@ -105,6 +113,8 @@ Os testes cobrem regras de orçamento, compatibilidade, serialização, ausênci
 6. Verifique os 37 componentes em /api/catalogo, os estados em /api/precos e a rejeição de pesquisas sem senha.
 7. Compile o Android com a URL HTTPS gerada e teste em outra rede.
 
-O Render gratuito pode suspender o servidor por inatividade; a primeira consulta pode demorar enquanto ele inicia. O Redis mantém as cotações após reinícios. A publicação, a transferência do cache e a persistência remota ainda precisam ser concluídas e validadas.
+A API está publicada em https://pcbuilder-api-dc2r.onrender.com. As rotas públicas respondem e as pesquisas administrativas sem autenticação são rejeitadas. As 37 consultas locais foram transferidas e confirmadas no Redis sem prazo de expiração. Após reiniciar o serviço, a API recarregou as cotações persistidas. A consulta HTTPS também foi validada no Android com o backend local desligado.
+
+O Render gratuito pode suspender o servidor por inatividade; a primeira consulta pode demorar enquanto ele inicia. Sem cotações armazenadas, o aplicativo apresenta “Sem cotação disponível” e mantém o catálogo e a seleção de peças.
 
 Entregue o link do repositório no Classroom. As cotações refletem o momento da coleta e não garantem estoque ou preço na compra.

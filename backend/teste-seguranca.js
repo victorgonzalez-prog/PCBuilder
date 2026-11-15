@@ -2,6 +2,29 @@ const { test: teste } = require("node:test");
 const verificar = require("node:assert/strict");
 const { spawn } = require("node:child_process");
 const { randomBytes } = require("node:crypto");
+const { catalogo, validarTitulo } = require("./servidor");
+
+teste("kits com placa-mãe ou refrigeração não são preços de processador avulso", () => {
+    const processador = catalogo.find(produto => produto.catalogoId === 1);
+    for (const titulo of [
+        "Kit Placa Mãe ASUS TUF GAMING B650EM-E WIFI AM5 + Processador AMD Ryzen 5 9600X",
+        "Micro Center AMD Ryzen 5 9600X CPU Processor with MSI PRO B850-P WiFi Motherboard ATX",
+        "Processador AMD Ryzen 5 9600X, AM5 + Water Co",
+        "Combo AMD Ryzen 5 9600X"
+    ]) {
+        verificar.equal(validarTitulo(processador, titulo), false, titulo);
+    }
+});
+
+teste("processadores avulsos e kits da capacidade correta de memória continuam aceitos", () => {
+    const processador = catalogo.find(produto => produto.catalogoId === 1);
+    verificar.equal(validarTitulo(processador, "Processador AMD Ryzen 5 9600X, 6-Cores, AM5, Sem Cooler"), true);
+    verificar.equal(validarTitulo(processador, "Processador AMD Ryzen 5 9600X"), true);
+    verificar.equal(validarTitulo(processador, "Processador AMD Ryzen 5 9600X3D"), false);
+    const memoria = catalogo.find(produto => produto.catalogoId === 3);
+    verificar.equal(validarTitulo(memoria, "Kit Memória Kingston Fury Beast 32GB (2x16GB) DDR5"), true);
+    verificar.equal(validarTitulo(memoria, "Kit Memória Kingston Fury Beast 16GB DDR4"), false);
+});
 
 async function iniciar(contextoTeste, token = "") {
     const filho = spawn(process.execPath, ["servidor.js"], {

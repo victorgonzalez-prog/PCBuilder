@@ -378,6 +378,18 @@ function validarTitulo(produto, titulo) {
         return false;
     }
 
+    const anuncioDeKit = ["kit", "combo", "bundle"].some(termo =>
+        contem(texto, termo)
+    );
+    const incluiOutraPeca = /\+\s*(?:water\b|cooler\b|placa\b|motherboard\b|mainboard\b|mem[oó]ria\b|ram\b|ssd\b|fonte\b|processador\b|ryzen\b|intel\b|radeon\b|geforce\b)/i.test(String(titulo));
+    const processadorComPlaca = produto.categoria === "Processador" &&
+        ["placa mae", "motherboard", "mainboard"].some(termo => contem(texto, termo));
+
+    if ((anuncioDeKit && produto.categoria !== "Memória RAM") ||
+        incluiOutraPeca || processadorComPlaca) {
+        return false;
+    }
+
     const gruposValidos = produto.grupos.every(
         grupo => grupo.some(termo =>
             contem(texto, termo)
@@ -1156,28 +1168,32 @@ aplicativo.use((erro, requisicao, resposta, proximo) => {
     });
 });
 
-if (process.env.RENDER && !tokenAdministrativoValido()) {
-    console.error("Configure uma senha administrativa própria com pelo menos 32 caracteres.");
-    process.exit(1);
-}
+module.exports = { catalogo, validarTitulo };
 
-carregarCachePersistido()
-    .then(() => {
-        const servidor = aplicativo.listen(PORTA, "0.0.0.0", () => {
-            console.log(
-                `API PCBuilder: http://localhost:${servidor.address().port}`
-            );
-            console.log(
-                `Componentes cadastrados: ${catalogo.length}`
-            );
-            console.log(
-                "Cache persistente inicializado."
-            );
-        });
-    })
-    .catch(erro => {
-        console.error(
-            "Não foi possível iniciar o armazenamento. Verifique a configuração do servidor."
-        );
+if (require.main === module) {
+    if (process.env.RENDER && !tokenAdministrativoValido()) {
+        console.error("Configure uma senha administrativa própria com pelo menos 32 caracteres.");
         process.exit(1);
-    });
+    }
+
+    carregarCachePersistido()
+        .then(() => {
+            const servidor = aplicativo.listen(PORTA, "0.0.0.0", () => {
+                console.log(
+                    `API PCBuilder: http://localhost:${servidor.address().port}`
+                );
+                console.log(
+                    `Componentes cadastrados: ${catalogo.length}`
+                );
+                console.log(
+                    "Cache persistente inicializado."
+                );
+            });
+        })
+        .catch(erro => {
+            console.error(
+                "Não foi possível iniciar o armazenamento. Verifique a configuração do servidor."
+            );
+            process.exit(1);
+        });
+}
