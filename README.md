@@ -353,9 +353,11 @@ O comando utiliza a API hospedada. --forcar solicita uma nova pesquisa dos 37 co
 
 4. Aguarde a conclusão e confira o resultado. Uma coleta completa deve indicar 37 de 37 componentes verificados e nenhum erro de pesquisa. Depois, abra Preços no aplicativo e toque em Consultar preços para carregar o resultado e verificar a data exibida em Coleta.
 
-A coleta real consome a cota do provedor e mantém os limites de segurança existentes. Ela pode terminar sem ofertas válidas para algumas peças, que continuarão como Sem cotação disponível. Não há garantia de encontrar preços para todos os modelos. Se houver erros ou a coleta parar antes dos 37 componentes, confira /api/status e a cota antes de repetir; o comando retorna erro para uma coleta incompleta. Se o acompanhamento atingir 15 minutos, ele informa o limite de espera e a pesquisa pode continuar no servidor.
+A coleta real consome a cota do provedor e mantém os limites de segurança existentes: o projeto interrompe novas pesquisas ao atingir 190 pesquisas no mês ou quando o provedor informa dez créditos restantes ou menos. --forcar não desativa esses limites. A coleta pode terminar sem ofertas válidas para algumas peças, que continuarão como Sem cotação disponível. Não há garantia de encontrar preços para todos os modelos. Se houver erros ou a coleta parar antes dos 37 componentes, confira /api/status e a cota antes de repetir; o comando retorna erro para uma coleta incompleta. Se o acompanhamento atingir 15 minutos, ele informa o limite de espera e a pesquisa pode continuar no servidor.
 
 Sem --forcar, o comando pode retornar que o cache ainda está válido e manter datas anteriores. O procedimento de coleta forçada é o necessário para solicitar uma nova pesquisa na data atual; acessar a página da API ou o botão do Android apenas consulta os dados existentes.
+
+Coleta real de validação em **15/11/2026**: o comando acima pesquisou **37 de 37 componentes, sem erros**, e retornou **32 componentes com ofertas aceitas e cinco sem ofertas válidas**. Os 37 registros foram confirmados no Redis, e todas as cotações disponíveis nessa coleta estavam datadas de 15/11/2026. Esse registro descreve aquela execução; para obter preços pesquisados em uma data posterior, repita o procedimento e confira novamente o resultado.
 
 ### Arquivo de configuração local
 
