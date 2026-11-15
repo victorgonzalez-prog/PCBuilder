@@ -26,12 +26,38 @@ teste("processadores avulsos e kits da capacidade correta de memória continuam 
     verificar.equal(validarTitulo(memoria, "Kit Memória Kingston Fury Beast 16GB DDR4"), false);
 });
 
-async function iniciar(contextoTeste, token = "") {
-    const filho = spawn(process.execPath, ["servidor.js"], {
+async function iniciar(contextoTeste, token = "", simularPesquisa = false) {
+    const argumentos = ["servidor.js"];
+    if (simularPesquisa) {
+        const preparacao = `
+            import { createRequire } from "node:module";
+            const exigir = createRequire(${JSON.stringify(__filename)});
+            const persistencia = exigir("./persistencia");
+            persistencia.carregarCache = async () => Object.fromEntries(
+                Array.from({ length: 37 }, (_, indice) => [indice + 1, {
+                    checadoEm: new Date().toISOString(), coletadoEm: null, ofertas: [], erro: null
+                }])
+            );
+            persistencia.salvarCache = async () => {};
+            globalThis.fetch = async endereco => {
+                const url = new URL(endereco);
+                if (url.hostname !== "serpapi.com") throw new Error("Rede externa bloqueada no teste.");
+                if (url.pathname === "/account.json") {
+                    return Response.json({ this_month_usage: 0, total_searches_left: 100 });
+                }
+                if (url.pathname === "/search.json" && url.searchParams.get("no_cache") === "true") {
+                    return Response.json({ shopping_results: [] });
+                }
+                throw new Error("A nova coleta não ignorou o cache do provedor.");
+            };
+        `;
+        argumentos.unshift("--import", "data:text/javascript," + encodeURIComponent(preparacao));
+    }
+    const filho = spawn(process.execPath, argumentos, {
         cwd: __dirname,
         env: {
             ...process.env, PORT: "0", ADMIN_API_TOKEN: token,
-            SERPAPI_KEY: "", UPSTASH_REDIS_REST_URL: "",
+            SERPAPI_KEY: simularPesquisa ? "chave-invalida-exclusiva-do-teste" : "", UPSTASH_REDIS_REST_URL: "",
             UPSTASH_REDIS_REST_TOKEN: "", RENDER: ""
         },
         stdio: ["ignore", "pipe", "pipe"]
@@ -85,7 +111,10 @@ teste("requisições sem senha ou com senha incorreta não iniciam pesquisas", a
     const url = await iniciar(contextoTeste, token);
     for (const rota of ["/api/atualizar", "/api/atualizar/1", "/api/atualizar/999"]) {
         for (const autorizacao of ["", "Bearer " + randomBytes(32).toString("hex"), token]) {
-            const resposta = await fetch(url + rota, { method: "POST", headers: { authorization: autorizacao } });
+            const resposta = await fetch(url + rota, {
+                method: "POST", headers: { authorization: autorizacao, "content-type": "application/json" },
+                body: JSON.stringify({ forcar: true })
+            });
             verificar.equal(resposta.status, 401);
             verificar.equal(resposta.headers.get("cache-control"), "no-store");
             const texto = await resposta.text();
@@ -104,6 +133,62 @@ teste("senha válida alcança as rotas; testes nunca têm chave SerpApi", async 
     for (const rota of ["/api/atualizar", "/api/atualizar/1"]) {
         verificar.equal((await fetch(url + rota, { method: "POST", headers: cabecalhos })).status, 503);
     }
+});
+
+teste("coleta forçada ignora cache recente e exige booleano verdadeiro", async contextoTeste => {
+    const token = randomBytes(32).toString("hex");
+    const url = await iniciar(contextoTeste, token, true);
+    const cabecalhos = { authorization: "Bearer " + token, "content-type": "application/json" };
+    for (const corpo of [{}, { forcar: "true" }]) {
+        const resposta = await fetch(url + "/api/atualizar", {
+            method: "POST", headers: cabecalhos, body: JSON.stringify(corpo)
+        });
+        verificar.equal(resposta.status, 200);
+        verificar.equal((await resposta.json()).iniciada, false);
+    }
+    const resposta = await fetch(url + "/api/atualizar/1", {
+        method: "POST", headers: cabecalhos, body: JSON.stringify({ forcar: true })
+    });
+    verificar.equal(resposta.status, 202);
+    const inicio = await resposta.json();
+    verificar.equal(inicio.forcada, true);
+    verificar.equal(inicio.quantidade, 1);
+    let status;
+    for (let tentativa = 0; tentativa < 50; tentativa++) {
+        status = await fetch(url + "/api/status").then(resposta => resposta.json());
+        if (!status.executando) break;
+        await new Promise(resolver => setTimeout(resolver, 20));
+    }
+    verificar.equal(status.executando, false);
+    verificar.equal(status.concluidos, 1);
+    verificar.equal(status.erros, 0);
+});
+
+teste("comando administrativo força e acompanha os 37 componentes sem rede externa", async contextoTeste => {
+    const token = randomBytes(32).toString("hex");
+    const url = await iniciar(contextoTeste, token, true);
+    const comando = spawn(process.execPath, ["atualizar-precos.js", "--forcar", "--acompanhar"], {
+        cwd: __dirname,
+        env: {
+            ...process.env, ADMIN_API_TOKEN: token, PCBUILDER_API_URL: url,
+            SERPAPI_KEY: "", UPSTASH_REDIS_REST_URL: "", UPSTASH_REDIS_REST_TOKEN: ""
+        },
+        stdio: ["ignore", "pipe", "pipe"]
+    });
+    contextoTeste.after(() => comando.kill());
+    let saida = "";
+    let erros = "";
+    comando.stdout.on("data", trecho => { saida += trecho.toString(); });
+    comando.stderr.on("data", trecho => { erros += trecho.toString(); });
+    const codigo = await new Promise((resolver, rejeitar) => {
+        const limite = setTimeout(() => rejeitar(new Error("Comando administrativo não terminou.")), 20000);
+        comando.once("error", () => { clearTimeout(limite); rejeitar(new Error("Falha ao iniciar comando.")); });
+        comando.once("exit", codigo => { clearTimeout(limite); resolver(codigo); });
+    });
+    verificar.equal(codigo, 0, erros);
+    verificar.match(saida, /37 de 37 componentes verificados/);
+    verificar.match(saida, /0 de 37 componentes com cotação aceita/);
+    verificar.equal(saida.includes(token) || erros.includes(token), false);
 });
 
 teste("corpo JSON inválido não expõe seu conteúdo na resposta", async contextoTeste => {

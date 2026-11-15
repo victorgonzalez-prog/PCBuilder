@@ -715,7 +715,7 @@ function extrairOferta(produto, resultado) {
     };
 }
 
-async function pesquisarProduto(produto) {
+async function pesquisarProduto(produto, forcar = false) {
 
     await verificarCota();
 
@@ -748,6 +748,7 @@ async function pesquisarProduto(produto) {
 
     url.searchParams.set("gl", "br");
     url.searchParams.set("hl", "pt");
+    if (forcar) url.searchParams.set("no_cache", "true");
 
     let dados;
 
@@ -830,7 +831,7 @@ let progresso = {
     erros: 0
 };
 
-function iniciarAtualizacao(produtos) {
+function iniciarAtualizacao(produtos, forcar = false) {
 
     if (executando) {
 
@@ -842,7 +843,7 @@ function iniciarAtualizacao(produtos) {
     }
 
     const pendentes = produtos.filter(
-        precisaAtualizar
+        produto => forcar || precisaAtualizar(produto)
     );
 
     if (pendentes.length === 0) {
@@ -872,7 +873,7 @@ function iniciarAtualizacao(produtos) {
                 try {
 
                     const ofertas =
-                        await pesquisarProduto(produto);
+                        await pesquisarProduto(produto, forcar);
 
                     const agora =
                         new Date().toISOString();
@@ -949,7 +950,8 @@ function iniciarAtualizacao(produtos) {
 
     return {
         iniciada: true,
-        quantidade: pendentes.length
+        quantidade: pendentes.length,
+        forcada: forcar
     };
 }
 
@@ -1106,7 +1108,8 @@ aplicativo.get("/api/health", (requisicao, resposta) => {
     resposta.json({
         sucesso: true,
         aplicativo: "PCBuilder",
-        status: "online"
+        status: "online",
+        atualizacaoForcada: true
     });
 });
 
@@ -1162,7 +1165,7 @@ aplicativo.post("/api/atualizar", exigirAdministrador, (requisicao, resposta) =>
     }
 
     const resultado =
-        iniciarAtualizacao(catalogo);
+        iniciarAtualizacao(catalogo, requisicao.body?.forcar === true);
 
     resposta.status(
         resultado.iniciada ? 202 : 200
@@ -1197,7 +1200,7 @@ aplicativo.post("/api/atualizar/:id", exigirAdministrador, (requisicao, resposta
     }
 
     const resultado =
-        iniciarAtualizacao([produto]);
+        iniciarAtualizacao([produto], requisicao.body?.forcar === true);
 
     resposta.status(
         resultado.iniciada ? 202 : 200

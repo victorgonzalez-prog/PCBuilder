@@ -324,9 +324,38 @@ Para uma atualização administrativa, configure ADMIN_API_TOKEN e PCBUILDER_API
 npm run atualizar
 ```
 
-Essa operação pode consumir a cota da SerpApi e respeita o prazo do cache. HTTP 401 indica autenticação ausente/incorreta; HTTP 503 pode indicar configuração administrativa ou SerpApi ausente. Não coloque a senha administrativa no Android. Se a cota acabar, confira a conta do provedor; não substitua preços reais por estimativas.
+Sem a opção --forcar, essa operação respeita o prazo do cache. Uma nova pesquisa pode consumir a cota da SerpApi. HTTP 401 indica autenticação ausente/incorreta; HTTP 503 pode indicar configuração administrativa ou SerpApi ausente. Não coloque a senha administrativa no Android. Se a cota acabar, confira a conta do provedor; não substitua preços reais por estimativas.
 
 Os arquivos .env, secrets.properties, credenciais, caches, node_modules e configurações locais são ignorados pelo Git. Se uma configuração privada for necessária ao professor para executar o backend opcional, entregue-a separadamente, conforme as regras da disciplina. Nunca a envie ao repositório ou a logs.
+
+### Buscar preços atualizados na data da avaliação
+
+**Se o professor quiser preços pesquisados na data em que estiver avaliando o aplicativo, deverá executar a mesma coleta administrativa descrita nesta seção.** O botão Consultar preços do Android lê as cotações armazenadas; a data de uma consulta ao aplicativo não significa que uma nova pesquisa foi realizada nas lojas.
+
+1. Tenha Node.js e npm instalados conforme os pré-requisitos. Na pasta backend, execute npm ci para instalar as dependências.
+2. Configure backend/.env com a URL abaixo e com ADMIN_API_TOKEN recebido separadamente, igual ao valor do serviço no Render. Mantenha a senha somente no arquivo local; ela não deve aparecer no README, no GitHub ou no APK.
+
+```dotenv
+PCBUILDER_API_URL=https://pcbuilder-api-dc2r.onrender.com
+ADMIN_API_TOKEN=
+```
+
+Preencha o campo vazio com a senha administrativa real antes de executar. A chave SerpApi e as credenciais Redis já ficam no servidor hospedado; o comando de atualização da API pública utiliza o token administrativo local.
+
+3. No terminal, a partir da raiz do projeto, execute:
+
+```text
+cd backend
+npm run atualizar -- --forcar --acompanhar
+```
+
+O comando utiliza a API hospedada. --forcar solicita uma nova pesquisa dos 37 componentes mesmo que o cache de sete dias ainda esteja válido, e usa no_cache=true para solicitar resultados novos ao provedor. --acompanhar consulta /api/status e apresenta o progresso, os erros, a quantidade de componentes com oferta aceita e as datas das cotações disponíveis. [Referência do parâmetro no_cache da SerpApi](https://serpapi.com/google-shopping-api).
+
+4. Aguarde a conclusão e confira o resultado. Uma coleta completa deve indicar 37 de 37 componentes verificados e nenhum erro de pesquisa. Depois, abra Preços no aplicativo e toque em Consultar preços para carregar o resultado e verificar a data exibida em Coleta.
+
+A coleta real consome a cota do provedor e mantém os limites de segurança existentes. Ela pode terminar sem ofertas válidas para algumas peças, que continuarão como Sem cotação disponível. Não há garantia de encontrar preços para todos os modelos. Se houver erros ou a coleta parar antes dos 37 componentes, confira /api/status e a cota antes de repetir; o comando retorna erro para uma coleta incompleta. Se o acompanhamento atingir 15 minutos, ele informa o limite de espera e a pesquisa pode continuar no servidor.
+
+Sem --forcar, o comando pode retornar que o cache ainda está válido e manter datas anteriores. O procedimento de coleta forçada é o necessário para solicitar uma nova pesquisa na data atual; acessar a página da API ou o botão do Android apenas consulta os dados existentes.
 
 ### Arquivo de configuração local
 
@@ -352,7 +381,7 @@ Dentro de backend:
 npm test
 ```
 
-Os testes cobrem autenticação, respostas públicas, proteção contra exposição do corpo inválido e rejeição de anúncios de kits vendidos como peça avulsa. As pesquisas dos testes ficam sem chave SerpApi e não consomem sua cota.
+Os testes cobrem autenticação, respostas públicas, proteção contra exposição do corpo inválido, rejeição de anúncios de kits vendidos como peça avulsa e coleta forçada com acompanhamento. Os testes de pesquisa usam respostas simuladas sem rede externa e sem uma chave SerpApi válida; não consomem sua cota.
 
 ## Hospedagem no Render
 
