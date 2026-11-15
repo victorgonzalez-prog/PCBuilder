@@ -1,0 +1,109 @@
+{
+  "origem": "Amostra de ofertas reais do cache local de 14/11/2026, exclusiva para testes.",
+  "produtos": [
+    {
+      "catalogoId": 1,
+      "status": "com_ofertas",
+      "coletadoEm": "2026-11-14T19:55:33.788Z",
+      "ofertas": [
+        {
+          "loja": "Pichau",
+          "preco": 1092.49,
+          "url": "https://www.google.com/search?ibp=oshop&q=Ryzen 5 9600X&prds=catalogid:14377881544845539925,productid:4963658490376957502,headlineOfferDocid:5568603825221219906,imageDocid:15967835350522256091,rds:PC_17195863691162874549|PROD_PC_17195863691162874549,gpcid:17195863691162874549,mid:576462781295411337,pvt:hg&hl=pt&gl=br&udm=28",
+          "titulo": "Processador AMD Ryzen 5 9600X"
+        }
+      ]
+    },
+    {
+      "catalogoId": 2,
+      "status": "com_ofertas",
+      "coletadoEm": "2026-11-14T19:56:08.461Z",
+      "ofertas": [
+        {
+          "loja": "Vancer Performance",
+          "preco": 4299.99,
+          "url": "https://www.google.com/search?ibp=oshop&q=Radeon RX 9070 XT&prds=productid:4438161758920808456,headlineOfferDocid:4438161758920808456,imageDocid:7005646870420866102,rds:PC_6097088797856825183|PROD_PC_6097088797856825183,pvt:hg&hl=pt&gl=br&udm=28",
+          "titulo": "Placa de Vídeo Sapphire Pure AMD Radeon RX 9070 XT 16GB GDDR6"
+        }
+      ]
+    },
+    {
+      "catalogoId": 3,
+      "status": "com_ofertas",
+      "coletadoEm": "2026-11-14T19:56:00.488Z",
+      "ofertas": [
+        {
+          "loja": "Jade",
+          "preco": 499,
+          "url": "https://www.google.com/search?ibp=oshop&q=Kingston Fury Beast 32 GB DDR5&prds=productid:12307442242415214139,headlineOfferDocid:12307442242415214139,imageDocid:3775909228240592500,pvt:hg&hl=pt&gl=br&udm=28",
+          "titulo": "MEMÓRIA 32GB DDR5 6000MHZ KINGSTON FURY BEAST, BLACK - KF560C40BB-32"
+        }
+      ]
+    },
+    {
+      "catalogoId": 5,
+      "status": "com_ofertas",
+      "coletadoEm": "2026-11-14T19:56:16.523Z",
+      "ofertas": [
+        {
+          "loja": "GOB",
+          "preco": 700,
+          "url": "https://www.google.com/search?ibp=oshop&q=Kingston NV3 1 TB&prds=catalogid:4215827330574405361,productid:8137748421175528373,headlineOfferDocid:8378156192890057253,imageDocid:648731756451713867,pvt:hg&hl=pt&gl=br&udm=28",
+          "titulo": "Ssd Nvme Kingston 1tb Nv3 M.2 2280 Pcie 4.0 Original Nf-e Ssd Nvme M.2 2280 Kingston 1tb"
+        }
+      ]
+    },
+    {
+      "catalogoId": 6,
+      "status": "com_ofertas",
+      "coletadoEm": "2026-11-14T19:56:25.123Z",
+      "ofertas": [
+        {
+          "loja": "Shopee",
+          "preco": 515.2,
+          "url": "https://www.google.com/search?ibp=oshop&q=Corsair RM750e&prds=catalogid:13982148149264420388,productid:11685885180095027353,headlineOfferDocid:167515385989572856,imageDocid:10035282660192803694,rds:PC_14066521376049262590|PROD_PC_14066521376049262590,gpcid:18218239628424594741,mid:576462454103315073,pvt:hg&hl=pt&gl=br&udm=28",
+          "titulo": "Fonte Corsair RM750e 750W"
+        }
+      ]
+    },
+    {
+      "catalogoId": 9,
+      "status": "com_ofertas",
+      "coletadoEm": "2026-11-14T19:55:54.033Z",
+      "ofertas": [
+        {
+          "loja": "Biostech Conecta",
+          "preco": 469.83,
+          "url": "https://www.google.com/search?ibp=oshop&q=ASUS PRIME A620M-K&prds=productid:6986979116613385984,headlineOfferDocid:6986979116613385984,imageDocid:5463712392914147422,pvt:hg&hl=pt&gl=br&udm=28",
+          "titulo": "Placa Mãe Amd AM5 Asus A620M-K Prime DDR5 Micro-Atx"
+        }
+      ]
+    },
+    {
+      "catalogoId": 32,
+      "status": "com_ofertas",
+      "coletadoEm": "2026-11-14T20:27:40.996Z",
+      "ofertas": [
+        {
+          "loja": "Electronica Barata",
+          "preco": 296.67,
+          "url": "https://www.google.com/search?ibp=oshop&q=Gabinete Montech Air 100 Lite&prds=catalogid:14200732375405483638,productid:13957772572698422180,headlineOfferDocid:11918328336982290999,imageDocid:1653015830584417333,rds:PC_17009592047790000643|PROD_PC_17009592047790000643,gpcid:17009592047790000643,mid:576462719723112317,pvt:hg&hl=pt&gl=br&udm=28",
+          "titulo": "Caixa Micro-ATX Montech Air 100 Lite Vidro Temperado"
+        }
+      ]
+    },
+    {
+      "catalogoId": 36,
+      "status": "com_ofertas",
+      "coletadoEm": "2026-11-14T19:56:41.614Z",
+      "ofertas": [
+        {
+          "loja": "Jade",
+          "preco": 150,
+          "url": "https://www.google.com/search?ibp=oshop&q=DeepCool AK400&prds=productid:8875381878238130125,headlineOfferDocid:8875381878238130125,imageDocid:16866329159613493123,pvt:hg&hl=pt&gl=br&udm=28",
+          "titulo": "AIR COOLER 120MM DEEPCOOL AK400, BLACK - R-AK400-BKNNMN-G-1"
+        }
+      ]
+    }
+  ]
+}

@@ -8,5 +8,6 @@ data class Componente(
     val preco: Double,
     val descricao: String?,
     val especificacao: String?,
-    val imagemResId: Int?
+    val soquete: String? = null,
+    val tipoMemoria: String? = null
 )

@@ -1,0 +1,19 @@
+{
+  "name": "pcbuilder-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API de preços independente do PCBuilder",
+  "main": "servidor.js",
+  "scripts": {
+    "start": "node servidor.js",
+    "test": "node --test teste-seguranca.js",
+    "atualizar": "node atualizar-precos.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "dotenv": "^16.4.7"
+  }
+}
