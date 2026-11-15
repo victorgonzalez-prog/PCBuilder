@@ -1055,6 +1055,52 @@ function montarProduto(produto) {
     };
 }
 
+aplicativo.get("/", (requisicao, resposta) => {
+    const quantidadeCotada = catalogo.map(montarProduto).filter(
+        produto => produto.status === "com_ofertas"
+    ).length;
+
+    resposta.set("Cache-Control", "no-store");
+    resposta.type("html").send(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PCBuilder — API de Preços</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f1f5f9; color: #0f172a; font-family: system-ui, sans-serif; line-height: 1.6; }
+        main { max-width: 760px; margin: 8vh auto; padding: 32px; background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; }
+        h1 { margin: 16px 0 8px; font-size: clamp(1.7rem, 5vw, 2.5rem); line-height: 1.2; }
+        p { color: #475569; }
+        .status { display: inline-block; padding: 4px 12px; border-radius: 24px; background: #dcfce7; color: #166534; font-weight: 600; }
+        nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 24px 0; }
+        a { color: #1d4ed8; }
+        nav a { padding: 14px 18px; border: 1px solid #cbd5e1; border-radius: 12px; text-decoration: none; font-weight: 600; }
+        nav a:hover, nav a:focus-visible { background: #eff6ff; border-color: #1d4ed8; }
+        footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
+        @media (max-width: 600px) { main { margin: 16px; padding: 24px; } }
+    </style>
+</head>
+<body>
+    <main>
+        <span class="status">Serviço online</span>
+        <h1>PCBuilder — API de Preços</h1>
+        <p>Serviço de cotações de componentes de computador utilizado pelo aplicativo PCBuilder.</p>
+        <p><strong>${catalogo.length} componentes</strong> no catálogo · <strong>${quantidadeCotada} com cotação disponível</strong>.</p>
+        <nav aria-label="Consultas públicas">
+            <a href="/api/health">Status do serviço</a>
+            <a href="/api/catalogo">Catálogo de componentes</a>
+            <a href="/api/precos">Consultar cotações</a>
+            <a href="/api/status">Andamento das pesquisas</a>
+        </nav>
+        <p>As consultas acima retornam dados em JSON. As cotações refletem o momento da coleta; componentes sem oferta válida permanecem sem preço disponível.</p>
+        <footer><a href="https://github.com/victorgonzalez-prog/PCBuilder/releases">Baixar o aplicativo Android</a></footer>
+    </main>
+</body>
+</html>`);
+});
+
 aplicativo.get("/api/health", (requisicao, resposta) => {
 
     resposta.json({

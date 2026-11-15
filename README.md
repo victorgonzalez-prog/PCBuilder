@@ -4,18 +4,9 @@ Aplicativo Android acadêmico para selecionar componentes de computador, verific
 
 **Entrega: PCBuilder 1.0 — Projeto Final.** O aplicativo usa por padrão a API pública https://pcbuilder-api-dc2r.onrender.com. Para compilar e avaliar o Android com essa API, não é necessário instalar Node.js, executar um servidor local ou informar chaves de API.
 
-[Repositório](https://github.com/victorgonzalez-prog/PCBuilder) · [Versões para download](https://github.com/victorgonzalez-prog/PCBuilder/releases) · [Verificar a API](https://pcbuilder-api-dc2r.onrender.com/api/health)
+[Repositório](https://github.com/victorgonzalez-prog/PCBuilder) · [Versões para download](https://github.com/victorgonzalez-prog/PCBuilder/releases) · [Página da API](https://pcbuilder-api-dc2r.onrender.com) · [Status do serviço](https://pcbuilder-api-dc2r.onrender.com/api/health)
 
-## Roteiro para o professor
-
-1. Instale um Android Studio compatível e o JDK 21, conforme a tabela abaixo.
-2. Clone este repositório ou extraia o ZIP completo. Abra a pasta que contém settings.gradle.kts e gradlew; não abra somente a pasta app ou backend.
-3. Selecione explicitamente **JDK 21 como Gradle JDK**, inclusive se o Android Studio tiver Java 25 embutido.
-4. Instale Android SDK Platform 36, Build Tools 35.0.0 e Platform-Tools pelo SDK Manager.
-5. Aguarde a sincronização, selecione o módulo app e execute em um dispositivo Android API 24 ou superior.
-6. Abra Catálogo, Minha Montagem, Orçamento e Preços. Na primeira consulta, aguarde a API iniciar; se necessário, toque novamente em Consultar preços.
-
-Se a sincronização falhar, comece pela seção [Problemas e soluções](#problemas-e-soluções), especialmente pelo erro de Java incompatível identificado na prova parcial.
+O endereço inicial da API apresenta o status do serviço e links para as consultas públicas. As rotas /api/health, /api/catalogo, /api/precos e /api/status retornam dados em JSON.
 
 ## Versões e pré-requisitos
 

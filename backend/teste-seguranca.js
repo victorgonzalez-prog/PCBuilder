@@ -51,8 +51,21 @@ async function iniciar(contextoTeste, token = "") {
     return "http://127.0.0.1:" + porta;
 }
 
-teste("rotas de leitura continuam públicas e retornam 37 componentes", async contextoTeste => {
+teste("página inicial e rotas de leitura são públicas e retornam 37 componentes", async contextoTeste => {
     const url = await iniciar(contextoTeste);
+    const inicio = await fetch(url + "/");
+    verificar.equal(inicio.status, 200);
+    verificar.match(inicio.headers.get("content-type"), /text\/html.*charset=utf-8/i);
+    const pagina = await inicio.text();
+    verificar.match(pagina, /PCBuilder — API de Preços/);
+    verificar.match(pagina, /37 componentes/);
+    verificar.equal(pagina.includes("Cannot GET"), false);
+    for (const rota of ["/api/health", "/api/catalogo", "/api/precos", "/api/status"]) {
+        verificar.ok(pagina.includes('href="' + rota + '"'));
+        verificar.equal((await fetch(url + rota)).status, 200);
+    }
+    const status = await fetch(url + "/api/status").then(resposta => resposta.json());
+    verificar.equal(status.executando, false);
     const saude = await fetch(url + "/api/health").then(resposta => resposta.json());
     verificar.equal(saude.sucesso, true);
     const catalogo = await fetch(url + "/api/catalogo").then(resposta => resposta.json());
