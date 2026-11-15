@@ -328,6 +328,22 @@ Essa operação pode consumir a cota da SerpApi e respeita o prazo do cache. HTT
 
 Os arquivos .env, secrets.properties, credenciais, caches, node_modules e configurações locais são ignorados pelo Git. Se uma configuração privada for necessária ao professor para executar o backend opcional, entregue-a separadamente, conforme as regras da disciplina. Nunca a envie ao repositório ou a logs.
 
+### Arquivo de configuração local
+
+O arquivo de credenciais usado por este projeto é **backend/.env**. Ele cumpre a função do arquivo local citado nas condições do trabalho; secrets.properties é outro exemplo de nome, mas não é necessário criar um segundo arquivo de segredos para este backend Node.js. O modelo público é [backend/.env.example](backend/.env.example), que contém somente nomes de variáveis e valores vazios para as credenciais.
+
+| Campo do arquivo local | Utilização |
+| --- | --- |
+| SERPAPI_KEY | Chave do provedor, usada pelo servidor ao pesquisar novos preços. |
+| UPSTASH_REDIS_REST_URL | Endereço do armazenamento persistente Redis. |
+| UPSTASH_REDIS_REST_TOKEN | Credencial de acesso ao Redis; configure junto com sua URL. |
+| ADMIN_API_TOKEN | Senha própria de pelo menos 32 caracteres para autorizar pesquisas administrativas, diferente das credenciais dos provedores. |
+| PCBUILDER_API_URL | Endereço da API usado pelo comando administrativo npm run atualizar; não é uma senha. |
+
+Para executar somente o Android com a API pública padrão, não há arquivo de credenciais a configurar no aplicativo. Para executar o backend com serviços privados, coloque o arquivo recebido separadamente em backend/.env e siga a seção Backend local opcional. Para administrar a API hospedada, ADMIN_API_TOKEN deve corresponder ao configurado no Render. Para administrar um backend local próprio, configure uma senha administrativa própria nesse servidor.
+
+A propriedade Gradle pcbuilder.apiUrl configura o endereço público usado pelo APK. Ela é independente de PCBUILDER_API_URL, que pertence ao comando administrativo do backend. As chaves da SerpApi, do Redis e a senha administrativa permanecem no servidor e fora dos fontes Android. Não inclua o arquivo privado em commits, Releases ou arquivos ZIP públicos.
+
 ### Testes do backend
 
 Dentro de backend:
@@ -357,6 +373,20 @@ As 37 consultas locais foram transferidas para o Redis sem prazo de expiração 
 
 Arquivos XML de manifesto, tema, ícones e regras de backup são recursos Android, não layouts de tela. Os nomes próprios do código e textos da interface estão em português; APIs, bibliotecas e protocolos preservam seus nomes originais.
 
+### Fluxo de dados e decisões técnicas
+
+[AtividadePrincipal](app/src/main/java/com/example/pcbuilder/AtividadePrincipal.kt) cria a interface Compose e obtém uma instância de ModeloPcBuilder associada à atividade. [AplicativoPcBuilder](app/src/main/java/com/example/pcbuilder/AplicativoPcBuilder.kt) apresenta as quatro rotas com NavDisplay e Navigation 3. As telas compartilham esse mesmo modelo de estado ao navegar.
+
+Ao tocar em Consultar preços, a tela chama o ViewModel. ModeloPcBuilder usa viewModelScope para iniciar a coroutine, marca o carregamento e consulta a interface FonteCotacoes. A implementação HTTP ServicoFinal executa a requisição em Dispatchers.IO. O resultado atualiza os StateFlow de cotações e status; os composables observam esses valores e apresentam carregamento, sucesso, ausência de preços ou erro. O uso de ViewModel mantém a seleção fora dos composables, e FonteCotacoes permite substituir a rede por respostas controladas nos testes.
+
+Ao gerar uma montagem, o ViewModel seleciona apenas componentes com cotação aceita e passa essas peças ao [GeradorMontagem](app/src/main/java/com/example/pcbuilder/GeradorMontagem.kt). O cálculo roda em Dispatchers.Default para liberar a interface durante o processamento. Orçamento, finalidade e restrições de compatibilidade orientam a escolha. A tela Minha Montagem apresenta os avisos do [VerificadorCompatibilidade](app/src/main/java/com/example/pcbuilder/VerificadorCompatibilidade.kt). O resultado pode ser aplicado à seleção compartilhada. O estado de seleção pertence ao ViewModel; a persistência das cotações pertence ao backend.
+
+CotacaoFinal.preco é opcional: só fornece um preço quando o status da API é com_ofertas e existe uma oferta com valor finito e positivo. Dados opcionais como URL e data de coleta são tratados antes da exibição. Essa decisão impede que a ausência de cotação se transforme em preço zero ou total aparentemente completo.
+
+O JSON recebido da API é interpretado com org.json. A exportação da montagem usa [ExportadorMontagem](app/src/main/java/com/example/pcbuilder/ExportadorMontagem.kt), os modelos anotados com @Serializable e kotlinx.serialization. O método exportar usa encodeToString, e importar usa decodeFromString. A interface permite copiar o JSON; a desserialização é exercitada nos testes.
+
+No servidor, [servidor.js](backend/servidor.js) mantém o catálogo e aplica os filtros às ofertas antes de devolvê-las ao aplicativo. [persistencia.js](backend/persistencia.js) carrega e salva o cache em Redis ou em arquivo local, conforme a configuração. [seguranca.js](backend/seguranca.js) protege as rotas que iniciam pesquisas. O aplicativo lê o cache por GET; a coleta na SerpApi é uma operação administrativa separada. Assim, consultar preços pelo Android não gasta pesquisas do provedor nem exige entregar uma chave dentro do APK.
+
 A compatibilidade é preliminar: confirme BIOS, dimensões, conexões e refrigeração antes de comprar. As ofertas refletem o momento da coleta e não garantem estoque ou preço na compra.
 
 ## Ambiente de validação e limites
@@ -367,4 +397,14 @@ Uma cópia contendo somente os arquivos preparados para o Git foi compilada sem 
 
 Os procedimentos de macOS e Linux estão documentados; não houve execução real nesses dois sistemas nesta validação. A compilação depende dos downloads iniciais e da instalação correta do SDK/JDK. O funcionamento de preços depende da disponibilidade da API e das cotações; os estados sem cotação são previstos. Antes da apresentação, confirme a validade do cache e teste o APK também em um aparelho físico e outra rede.
 
-Entregue o link do repositório no Google Classroom. O histórico da prova parcial foi preservado; esta entrega descreve a versão final em Compose.
+## Entrega
+
+Entregue o link [https://github.com/victorgonzalez-prog/PCBuilder](https://github.com/victorgonzalez-prog/PCBuilder) na atividade correspondente do Google Classroom. O histórico da prova parcial foi preservado; esta entrega descreve a versão final em Compose.
+
+Quando forem necessárias as credenciais para executar o backend, envie **backend/.env separadamente ao professor**, pelo canal privado indicado para a atividade. O arquivo deve seguir o modelo backend/.env.example e conter os valores necessários ao modo de execução escolhido. Ele já está incluído no .gitignore e deve permanecer fora do repositório e de seu histórico. A execução do Android com a API pública não exige essas credenciais no aplicativo.
+
+Recomenda-se entregar o trabalho com pelo menos uma aula de antecedência em relação ao prazo final, para permitir a verificação da execução em aula.
+
+Para compilar e executar, configure JDK, SDK, dispositivo e, quando aplicável, o arquivo local conforme as seções anteriores. O procedimento utiliza os fontes entregues, a URL pública já configurada e as tarefas do Wrapper, sem editar código Kotlin, JavaScript ou versões dos plugins. Caminhos de instalações locais e valores privados pertencem à configuração do ambiente.
+
+Na apresentação, demonstre as quatro telas e explique o fluxo descrito em Fluxo de dados e decisões técnicas: estado compartilhado no ViewModel, coroutines para rede e cálculo, tratamento da falta de preços, serialização da montagem e separação entre aplicativo e servidor. Essas explicações se referem ao código efetivamente entregue.
