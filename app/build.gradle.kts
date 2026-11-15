@@ -74,3 +74,10 @@ kotlin {
         )
     }
 }
+
+tasks.register<Copy>("prepararEntrega") {
+    dependsOn("assembleDebug")
+    from(layout.buildDirectory.file("outputs/apk/debug/app-debug.apk"))
+    into(rootProject.layout.buildDirectory.dir("entrega"))
+    rename { "PCBuilder-${android.defaultConfig.versionName}-Projeto-Final.apk" }
+}
