@@ -2,7 +2,7 @@
 
 Aplicativo Android acadêmico para selecionar componentes de computador, verificar compatibilidade, gerar montagens por orçamento e comparar cotações reais.
 
-**Entrega: PCBuilder 1.0 — Projeto Final.** O aplicativo usa por padrão a API pública https://pcbuilder-api-dc2r.onrender.com. Para compilar e avaliar o Android com essa API, não é necessário instalar Node.js, executar um servidor local ou informar chaves de API.
+**PCBuilder 1.0 — Projeto Final.** O aplicativo usa por padrão a API pública https://pcbuilder-api-dc2r.onrender.com. Para compilar e avaliar o Android com essa API, não é necessário instalar Node.js, executar um servidor local ou informar chaves de API.
 
 [Repositório](https://github.com/victorgonzalez-prog/PCBuilder) · [Versões para download](https://github.com/victorgonzalez-prog/PCBuilder/releases) · [Página da API](https://pcbuilder-api-dc2r.onrender.com) · [Status do serviço](https://pcbuilder-api-dc2r.onrender.com/api/health)
 
@@ -396,15 +396,3 @@ A validação local usa Windows, JDK 21.0.10, Gradle 8.13, SDK 36/Build Tools 35
 Uma cópia contendo somente os arquivos preparados para o Git foi compilada sem .env, sem local.properties e com um GRADLE_USER_HOME novo. O Wrapper e as dependências foram baixados novamente. Nessa cópia passaram seis testes locais Android, quatro testes de interface no emulador e sete testes do backend após npm ci; a tarefa prepararEntrega também gerou o APK com o nome da entrega.
 
 Os procedimentos de macOS e Linux estão documentados; não houve execução real nesses dois sistemas nesta validação. A compilação depende dos downloads iniciais e da instalação correta do SDK/JDK. O funcionamento de preços depende da disponibilidade da API e das cotações; os estados sem cotação são previstos. Antes da apresentação, confirme a validade do cache e teste o APK também em um aparelho físico e outra rede.
-
-## Entrega
-
-Entregue o link [https://github.com/victorgonzalez-prog/PCBuilder](https://github.com/victorgonzalez-prog/PCBuilder) na atividade correspondente do Google Classroom. O histórico da prova parcial foi preservado; esta entrega descreve a versão final em Compose.
-
-Quando forem necessárias as credenciais para executar o backend, envie **backend/.env separadamente ao professor**, pelo canal privado indicado para a atividade. O arquivo deve seguir o modelo backend/.env.example e conter os valores necessários ao modo de execução escolhido. Ele já está incluído no .gitignore e deve permanecer fora do repositório e de seu histórico. A execução do Android com a API pública não exige essas credenciais no aplicativo.
-
-Recomenda-se entregar o trabalho com pelo menos uma aula de antecedência em relação ao prazo final, para permitir a verificação da execução em aula.
-
-Para compilar e executar, configure JDK, SDK, dispositivo e, quando aplicável, o arquivo local conforme as seções anteriores. O procedimento utiliza os fontes entregues, a URL pública já configurada e as tarefas do Wrapper, sem editar código Kotlin, JavaScript ou versões dos plugins. Caminhos de instalações locais e valores privados pertencem à configuração do ambiente.
-
-Na apresentação, demonstre as quatro telas e explique o fluxo descrito em Fluxo de dados e decisões técnicas: estado compartilhado no ViewModel, coroutines para rede e cálculo, tratamento da falta de preços, serialização da montagem e separação entre aplicativo e servidor. Essas explicações se referem ao código efetivamente entregue.
